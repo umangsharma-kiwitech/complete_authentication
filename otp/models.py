@@ -2,11 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
 
-# from django.contrib.auth.models import AbstractUser
-
-
-# Create your models here.
-
+# table for user details
 
 class UserDetails(AbstractBaseUser):
     first_name = models.CharField(max_length=20)
@@ -21,3 +17,34 @@ class UserDetails(AbstractBaseUser):
 
     def __str__(self):
         return self.email
+
+
+# user address table
+
+class userAddresss(models.Model):
+    user = models.ForeignKey(UserDetails, on_delete=models.CASCADE)
+    house_number = models.CharField(max_length=50)
+    landmark = models.CharField(max_length=100)
+    country = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    city = models.CharField(max_length=100)
+    pincode = models.IntegerField()
+    REQUIRED_FIELDS = ['house_number', 'landmark', 'country', 'state', 'city', 'pincode']
+
+    def __str__(self):
+        return self.house_number
+
+
+# user correspondence address
+
+class userCorrespondenceAddress(models.Model):
+    corres_house_number = models.CharField(max_length=50)
+    corres_landmark = models.CharField(max_length=100)
+    country1 = models.CharField(max_length=50)
+    state1 = models.CharField(max_length=50)
+    city1 = models.CharField(max_length=100)
+    pincode1 = models.IntegerField()
+    REQUIRED_FIELDS1 = ['corres_house_number', 'corres_landmark', 'country', 'state', 'city', 'pincode']
+
+    def __str__(self):
+        return self.corres_house_number
