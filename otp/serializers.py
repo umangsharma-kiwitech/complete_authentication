@@ -34,13 +34,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
-    class Meta:
-        model = UserDetails
-        fields = ('id', 'first_name', 'last_name', 'email', 'username', 'password', 'password2', 'is_active')
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
-
     def validate_email(self, email):
         existing = UserDetails.objects.filter(email=email).first()
         if existing:
@@ -69,15 +62,18 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+    class Meta:
+        model = UserDetails
+        fields = ('id', 'first_name', 'last_name', 'email', 'username', 'password', 'password2', 'is_active')
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
 
 # for user address
 
 class UserAddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = userAddresss
-        fields = ('id', 'house_number', 'landmark', 'country', 'state', 'city', 'pincode', 'user')
-
-    user = serializers.PrimaryKeyRelatedField(queryset=UserDetails.objects.all())
+    user_details = RegistrationSerializer(many=True, read_only=True)
 
     house_number = serializers.CharField(required=True, max_length=validation_message.CHAR_LIMIT_SIZE['house_max'],
                                          error_messages=validation_message.ADDRESS['house_number']
@@ -100,7 +96,6 @@ class UserAddressSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = userAddresss.objects.create(
-            user=validated_data['user'],
             house_number=validated_data['house_number'],
             landmark=validated_data['landmark'],
             country=validated_data['country'],
@@ -109,12 +104,6 @@ class UserAddressSerializer(serializers.ModelSerializer):
             pincode=validated_data['pincode']
         )
         user.save()
-        return user
-
-    def validate_UserAddress(self, user):
-        existing = userAddresss.objects.filter(user=user).first()
-        if existing:
-            raise serializers.ValidationError("You have already added an address")
         return user
 
     def validate_house_number(self, house_number):
@@ -147,14 +136,14 @@ class UserAddressSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Please enter pincode")
         return pincode
 
+    class Meta:
+        model = userAddresss
+        fields = ('user_details', 'useradd', 'id', 'house_number', 'landmark', 'country', 'state', 'city', 'pincode')
+
 
 # for user correspondence address
 
 class userCorrespondenceAddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = userCorrespondenceAddress
-        fields = ('id', 'corres_house_number', 'corres_landmark', 'country1', 'state1', 'city1', 'pincode1')
-
     corres_house_number = serializers.CharField(required=True,
                                                 max_length=validation_message.CHAR_LIMIT_SIZE['corres_house_max'],
                                                 error_messages=validation_message.CORRESPONDENCE_ADDRESS['house_number']
@@ -172,10 +161,10 @@ class userCorrespondenceAddressSerializer(serializers.ModelSerializer):
                                    error_messages=validation_message.ADDRESS['state'])
 
     city1 = serializers.CharField(required=True, max_length=validation_message.CHAR_LIMIT_SIZE['city_max'],
-                                 error_messages=validation_message.ADDRESS['city'])
+                                  error_messages=validation_message.ADDRESS['city'])
 
     pincode1 = serializers.IntegerField(required=True,
-                                       error_messages=validation_message.ADDRESS['pincode'])
+                                        error_messages=validation_message.ADDRESS['pincode'])
 
     def create(self, validated_data):
         user = userCorrespondenceAddress.objects.create(
@@ -218,3 +207,10 @@ class userCorrespondenceAddressSerializer(serializers.ModelSerializer):
         if not pincode1:
             raise serializers.ValidationError("Please enter pincode")
         return pincode1
+
+    class Meta:
+        model = userCorrespondenceAddress
+        fields = (
+            'id', 'corres_house_number', 'corres_landmark',
+            'country1',
+            'state1', 'city1', 'pincode1')

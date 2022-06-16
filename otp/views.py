@@ -51,6 +51,7 @@ class addressAPIView(viewsets.ModelViewSet):
         else:
             return Response({"error": serializer.errors, "status": status.HTTP_201_CREATED})
 
+
 # for user correspondence address
 
 class correspondenceAddressAPIView(viewsets.ModelViewSet):
@@ -70,20 +71,3 @@ class correspondenceAddressAPIView(viewsets.ModelViewSet):
             )
         else:
             return Response({"error": serializer.errors, "status": status.HTTP_201_CREATED})
-# # creating login view
-# class LoginAPIView(viewsets.ModelViewSet):
-#     http_method_names = 'post'
-#
-#     def post(self, request):
-#         email = request.data['email']
-#         password = request.data['password']
-#
-#         user = UserDetails.objects.filter(email=email)
-#
-#         if user is None:
-#             raise AuthenticationFailed('user not found')
-#
-#         if not user.check_password(password):
-#             raise AuthenticationFailed('incorrect password')
-#
-#         return response

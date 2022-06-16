@@ -16,13 +16,13 @@ class UserDetails(AbstractBaseUser):
     REQUIRED_FIELDS = ['firstname', 'lastname', 'username', 'password']
 
     def __str__(self):
-        return self.email
+        return self.username
 
 
 # user address table
 
 class userAddresss(models.Model):
-    user = models.ForeignKey(UserDetails, on_delete=models.CASCADE)
+    useradd = models.ForeignKey(UserDetails,on_delete=models.SET,null=True)
     house_number = models.CharField(max_length=50)
     landmark = models.CharField(max_length=100)
     country = models.CharField(max_length=50)
@@ -48,3 +48,5 @@ class userCorrespondenceAddress(models.Model):
 
     def __str__(self):
         return self.corres_house_number
+
+
